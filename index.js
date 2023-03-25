@@ -1,20 +1,4 @@
-/**
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/* eslint-disable camelcase */
-// [START calendar_quickstart]
+
 const fs = require('fs').promises;
 const path = require('path');
 const process = require('process');
@@ -28,6 +12,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // time.
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+
 
 /**
  * Reads previously authorized credentials from the save file.
@@ -95,6 +80,56 @@ async function listEvents(auth) {
     singleEvents: true,
     orderBy: 'startTime',
   });
+
+const event = {
+  'summary': 'Google I/O 2015',
+  'location': '800 Howard St., San Francisco, CA 94103',
+  'description': 'A chance to hear more about Google\'s developer products.',
+  'start': {
+    'dateTime': '2023-03-28T09:00:00-07:00',
+    'timeZone': 'America/Los_Angeles',
+  },
+  'end': {
+    'dateTime': '2023-03-28T17:00:00-07:00',
+    'timeZone': 'America/Los_Angeles',
+  },
+  'recurrence': [
+    'RRULE:FREQ=DAILY;COUNT=2'
+  ],
+  'attendees': [
+    {'email': 'lpage@example.com'},
+    {'email': 'sbrin@example.com'},
+  ],
+  'conferenceData': {
+    'createRequest': {
+      'conferenceSolutionKey': {
+        'type': 'hangoutsMeet'
+      },
+      'requestId': 'random-string-123'
+    }
+  },
+  'reminders': {
+    'useDefault': false,
+    'overrides': [
+      {'method': 'email', 'minutes': 24 * 60},
+      {'method': 'popup', 'minutes': 10},
+    ],
+  },
+};
+
+calendar.events.insert({
+  auth: auth,
+  calendarId: 'primary',
+  resource: event,
+}, function(err, event) {
+  console.log(err,event ,"event")
+  if (err) {
+    console.log('There was an error contacting the Calendar service: ' + err);
+    return;
+  }
+  console.log('Event created: %s', event.htmlLink);
+  console.log('Google Meet link: %s', event.hangoutLink);
+});
   const events = res.data.items;
   if (!events || events.length === 0) {
     console.log('No upcoming events found.');
@@ -105,6 +140,8 @@ async function listEvents(auth) {
     const start = event.start.dateTime || event.start.date;
     console.log(`${start} - ${event.summary}`);
   });
+
+
 }
 
 authorize().then(listEvents).catch(console.error);
@@ -147,6 +184,7 @@ calendar.events.insert({
   calendarId: 'primary',
   resource: event,
 }, function(err, event) {
+  console.log(err,event ,"event")
   if (err) {
     console.log('There was an error contacting the Calendar service: ' + err);
     return;
@@ -155,4 +193,4 @@ calendar.events.insert({
 });
 }
 
-authorize().then(createEvent).catch(console.error);
+// authorize().then(createEvent).catch(console.error);
